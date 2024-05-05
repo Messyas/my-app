@@ -11,22 +11,18 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  constructor(props) { //contrutor props
-    super(props);
-      this.state = {
-        squares: Array(9).fill(null),
-        xIsNext: true,
-      };
-  }
-
   handleClick(i) {
-    const squares = this.state.squares.slice();
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     if(calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
-      squares: squares,
+      history: history.concat([{
+        squares: squares,
+      }]),
       xIsNext: !this.state.xIsNext,
     });
   }
@@ -34,28 +30,30 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
     <Square 
-    value={this.state.squares[i]} 
-    onClick={() => this.handleClick(i)}
+     value={this.props.squares[i]} 
+     onClick={() => this.props.onClick(i)}
     />
    );
   }
 
   render () {
+    const history = this.state.history;
+    const current = history[history.length - 1];
     const winner = calculateWinner(this.state.squares); 
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player' + (this.state.xIsNext ? 'X' : 'O');
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
     return (
       <div> 
          <div className="status">{status}</div>
-      <div className="board-row">
-        {this.renderSquare(0)}
-        {this.renderSquare(1)}
-        {this.renderSquare(2)}
+          <div className="board-row">
+            {this.renderSquare(0)}
+            {this.renderSquare(1)}
+            {this.renderSquare(2)}
       </div>
       <div className="board-row">
             {this.renderSquare(3)}
@@ -73,6 +71,16 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+      this.state = {
+        history : [{
+          squares: Array(9).fill(null),
+      }],
+      xIsNext:true,
+    }
+  }
+
   render() {
     return (
       <div className="game">
@@ -114,5 +122,4 @@ function calculateWinner(squares) {
   }
   return null;
 }
-
-  
+//parei no Adicionando viagem no tempo https://legacy.reactjs.org/tutorial/tutorial.html
